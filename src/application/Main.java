@@ -11,8 +11,8 @@ public class Main extends Application {
         VideoPlayer player = new VideoPlayer("file:///C:/eclipse/video.mp4");
 
         // add the player to the scene, set width and height according to video
-        // and background color to black
-        Scene scene = new Scene(player, 640, 360);
+        // Video Res is 640x360. Adding 30px Y axis to accomodate mediabar with controls
+        Scene scene = new Scene(player, 640, 390);
         // add scene to the stage and finally show it
         primaryStage.setScene(scene);
         primaryStage.show();

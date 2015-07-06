@@ -15,6 +15,7 @@ public class VideoPlayer extends BorderPane {
     MediaPlayer player;
     MediaView view;
 
+    MediaBar bar; // custom class that extends JavaFX HBox
     Pane mediaPane; // mediaplayer container
 
     public VideoPlayer(String file){
@@ -26,6 +27,12 @@ public class VideoPlayer extends BorderPane {
         mediaPane.getChildren().add(view);
         // add pane to the center of this videoplayer(BorderPane)
         setCenter(mediaPane);
+
+        // add mediabar controls and add it to the bottom of the pane
+        bar = new MediaBar(player);
+        setBottom(bar);
+        setStyle("-fx-background-color: #bfc2c7"); // set HBox(mediabar) background color to gray
+
         // and finally play the video
         player.play();
     }
