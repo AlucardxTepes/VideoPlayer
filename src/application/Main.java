@@ -18,49 +18,100 @@ public class Main extends Application {
 
     VideoPlayer mPlayer;
     FileChooser mFileChooser;
+    MenuItem mOpenMenuItem, mExitMenuItem, mShowInfoMenuItem;
+    Menu mFileMenu;
+    MenuBar mMenu;
+    Scene mScene;
 
     @Override
     public void start(final Stage primaryStage) {
 
-        MenuItem openMenuItem = new MenuItem("Open");
-        Menu fileMenu = new Menu("File");
-        MenuBar menu = new MenuBar();
+        initPlayer(primaryStage, 640, 420);
 
-        fileMenu.getItems().add(openMenuItem);
-        menu.getMenus().add(fileMenu);
+    }
+
+    private void initPlayer(Stage stage, double w, double h){
+        // initialize menu
+        initMenu(stage);
+        // Create empty player window layout
+        mPlayer = new VideoPlayer();
+        // add Menu bar at the top
+        mPlayer.setTop(mMenu);
+        // add the mPlayer to the scene, set width and height according to video
+        // Video Res is 640x360. Adding 35px to the Y axis to accommodate mediabar with controls
+        // and additional 25px for top mMenu
+        mScene = new Scene(mPlayer, w, h);
+        // add scene to the stage and finally show it
+        stage.setScene(mScene);
+        stage.show();
+    }
+
+    private void initPlayer(Stage stage, File f) {
+        if (f != null) {
+            try {
+                mPlayer = new VideoPlayer(f.toURI().toURL().toExternalForm());
+//                Scene scene = new Scene(mPlayer, mPlayer.media.getWidth(), mPlayer.media.getHeight());
+                mPlayer.setTop(mMenu);
+                mScene.setRoot(mPlayer);
+                stage.setScene(mScene);
+                stage.show();
+//                System.out.println("Video width: " + mPlayer.media.getWidth() + " Video Height: " + mPlayer.view.fitHeightProperty());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void resizeWindow(Stage stage){
+        stage.setWidth(mPlayer.media.getWidth());
+        stage.setHeight(mPlayer.media.getHeight());
+    }
+
+    private void initMenu(Stage stage) {
+        mOpenMenuItem = new MenuItem("Open");
+        mShowInfoMenuItem = new MenuItem("Show Media Info");
+        mExitMenuItem = new MenuItem("Exit");
+        mFileMenu = new Menu("File");
+        mMenu = new MenuBar();
+
+        mFileMenu.getItems().add(mOpenMenuItem);
+        mFileMenu.getItems().add(mShowInfoMenuItem);
+        mFileMenu.getItems().add(mExitMenuItem);
+        mMenu.getMenus().add(mFileMenu);
 
         mFileChooser = new FileChooser();
+        // apply mp4 files filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Video files (*.mp4)", "*.mp4");
+        mFileChooser.getExtensionFilters().add(extFilter);
 
-
-        mPlayer = new VideoPlayer("file:///C:/eclipse/video.mp4");
-        // add Menu bar at the top
-        mPlayer.setTop(menu);
-
-        // add the mPlayer to the scene, set width and height according to video
-        // Video Res is 640x360. Adding 35px Y axis to accomodate mediabar with controls
-        // and additional 25px for top menu
-        Scene scene = new Scene(mPlayer, 640, 420);
-        // add scene to the stage and finally show it
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-
-        openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+        // set event listeners for menu items
+        mOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                mPlayer.player.pause();
-                File file = mFileChooser.showOpenDialog(primaryStage);
-                if (file != null) {
-                    try {
-                        mPlayer = new VideoPlayer(file.toURI().toURL().toExternalForm());
-                        Scene scene = new Scene(mPlayer, 640, 420);
-                        primaryStage.setScene(scene);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
+
+                if (mPlayer.player != null) {
+                    // if theres a video playing
+                    mPlayer.player.pause();
                 }
+                File file = mFileChooser.showOpenDialog(stage);
+                initPlayer(stage, file);
             }
         });
+        mShowInfoMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Video width: " + mPlayer.media.getWidth() + " Video Height: " + mPlayer.media.getHeight());
+//                resizeWindow(stage);
+            }
+        });
+        mExitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+//                mPlayer.player.stop();
+                System.exit(0);
+            }
+        });
+
     }
 
     public static void main(String[] args) {

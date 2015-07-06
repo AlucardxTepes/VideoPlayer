@@ -27,13 +27,22 @@ public class VideoPlayer extends BorderPane {
         mediaPane.getChildren().add(view);
         // add pane to the center of this videoplayer(BorderPane)
         setCenter(mediaPane);
-
         // add mediabar controls and add it to the bottom of the pane
         bar = new MediaBar(player);
         setBottom(bar);
         setStyle("-fx-background-color: #bfc2c7"); // set HBox(mediabar) background color to gray
-
         // and finally play the video
         player.play();
     }
+
+    public VideoPlayer(){
+        mediaPane = new Pane();
+        // add pane to the center of this videoplayer(BorderPane)
+        setCenter(mediaPane);
+        // add mediabar controls and add it to the bottom of the pane
+        bar = new MediaBar();
+        setBottom(bar);
+        setStyle("-fx-background-color: #bfc2c7"); // set HBox(mediabar) background color to gray
+    }
+
 }

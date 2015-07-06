@@ -108,7 +108,28 @@ public class MediaBar extends HBox { // HBox is a horizontal box part of JavaFX 
                 }
             }
         });
+    }
 
+    // no arguments constructor
+    public MediaBar(){
+        // setup styling
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(5, 10, 5, 10));
+
+        // set sizing
+        vol.setPrefWidth(70);
+        vol.setMinWidth(30);
+        vol.setValue(100); // default volume value is 100
+
+        HBox.setHgrow(time, Priority.ALWAYS);
+        // prevent resizing for playbutton
+        playButton.setPrefWidth(30);
+
+        // add views to MediaBar, in right order
+        getChildren().add(playButton);
+        getChildren().add(time);
+        getChildren().add(volume);
+        getChildren().add(vol);
     }
 
     private void updateValues() {
