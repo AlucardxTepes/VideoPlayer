@@ -1,5 +1,10 @@
 package application;
 
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -29,7 +34,7 @@ public class MediaBar extends HBox { // HBox is a horizontal box part of JavaFX 
 
         // setup styling
         setAlignment(Pos.CENTER);
-        setPadding(new Insets(5,10,5,10));
+        setPadding(new Insets(5, 10, 5, 10));
 
         // set sizing
         vol.setPrefWidth(70);
@@ -45,5 +50,76 @@ public class MediaBar extends HBox { // HBox is a horizontal box part of JavaFX 
         getChildren().add(time);
         getChildren().add(volume);
         getChildren().add(vol);
+
+
+
+        /************* EVENT LISTENERS **************/
+
+
+        // playButton listener
+        playButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                MediaPlayer.Status status = player.getStatus();
+
+                if(status == MediaPlayer.Status.PLAYING){
+                    // replay video if video has ended:
+                    if(player.getCurrentTime().greaterThanOrEqualTo(player.getTotalDuration())){
+                        player.seek(player.getStartTime());
+                        player.play();
+                    } else {
+                        // otherwise pause video normally
+                        player.pause();
+                        playButton.setText(">");
+                    }
+                }
+
+                if(status == MediaPlayer.Status.PAUSED || status == MediaPlayer.Status.HALTED || status == MediaPlayer.Status.STOPPED){
+                    player.play();
+                    playButton.setText("||");
+                }
+            }
+        });
+
+        // time / navigation bar Listener for keeping track of video time position on slider
+        player.currentTimeProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                updateValues();
+            }
+        });
+        // time listener for jumping and skipping video time / slider position
+        time.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (time.isPressed()) {
+                    // jump to clicked position in time slider
+                    player.seek(player.getMedia().getDuration().multiply(time.getValue()/100));
+                }
+            }
+        });
+
+        // volume slider listener
+        vol.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (vol.isPressed()){
+                    player.setVolume(vol.getValue()/100);
+                }
+            }
+        });
+
+    }
+
+    private void updateValues() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                // Calculate video current position using formula:
+                // current time / total time * 100
+                time.setValue(player.getCurrentTime().toMillis()/player.getTotalDuration().toMillis()*100);
+            }
+        });
+
     }
 }
