@@ -46,16 +46,16 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void initPlayer(Stage stage, File f) {
+    private void playFile(Stage stage, File f) {
         if (f != null) {
             try {
-                mPlayer = new VideoPlayer(f.toURI().toURL().toExternalForm());
+              System.out.println("new instance");
+                mPlayer = new VideoPlayer(f.toURI().toURL().toExternalForm(), stage);
 //                Scene scene = new Scene(mPlayer, mPlayer.media.getWidth(), mPlayer.media.getHeight());
                 mPlayer.setTop(mMenu);
                 mScene.setRoot(mPlayer);
                 stage.setScene(mScene);
                 stage.show();
-//                System.out.println("Video width: " + mPlayer.media.getWidth() + " Video Height: " + mPlayer.view.fitHeightProperty());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -63,6 +63,7 @@ public class Main extends Application {
     }
 
     private void resizeWindow(Stage stage){
+        System.out.println("Video width: " + mPlayer.media.getWidth() + " Video Height: " + mPlayer.media.getHeight());
         stage.setWidth(mPlayer.media.getWidth());
         stage.setHeight(mPlayer.media.getHeight());
     }
@@ -94,16 +95,11 @@ public class Main extends Application {
                     mPlayer.player.pause();
                 }
                 File file = mFileChooser.showOpenDialog(stage);
-                initPlayer(stage, file);
+                playFile(stage, file);
             }
         });
-        mShowInfoMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Video width: " + mPlayer.media.getWidth() + " Video Height: " + mPlayer.media.getHeight());
-//                resizeWindow(stage);
-            }
-        });
+        mShowInfoMenuItem.setOnAction(event -> System.out.println(mPlayer.showMediaInfo()));
+
         mExitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

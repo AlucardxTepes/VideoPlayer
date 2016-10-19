@@ -5,6 +5,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.Stage;
 
 /**
  * Created by Alucard on 7/5/2015.
@@ -18,7 +19,7 @@ public class VideoPlayer extends BorderPane {
     MediaBar bar; // custom class that extends JavaFX HBox
     Pane mediaPane; // mediaplayer container
 
-    public VideoPlayer(String file){
+    public VideoPlayer(String file, Stage stage){
         media = new Media(file);
         player = new MediaPlayer(media);
         view = new MediaView(player);
@@ -32,6 +33,15 @@ public class VideoPlayer extends BorderPane {
         setBottom(bar);
         setStyle("-fx-background-color: #bfc2c7"); // set HBox(mediabar) background color to gray
         // and finally play the video
+        player.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Player ready, resizing to: " + media.getWidth() +
+                                    " , " + media.getHeight());
+                stage.setWidth(media.getWidth());
+                stage.setHeight(media.getHeight() + 60);
+            }
+        });
         player.play();
     }
 
@@ -43,6 +53,11 @@ public class VideoPlayer extends BorderPane {
         bar = new MediaBar();
         setBottom(bar);
         setStyle("-fx-background-color: #bfc2c7"); // set HBox(mediabar) background color to gray
+    }
+
+    public String showMediaInfo(){
+        return "Video width: " + media.getWidth() + ", Video height: " + media.getHeight() +
+                "\nDuration: " + media.getDuration();
     }
 
 }
